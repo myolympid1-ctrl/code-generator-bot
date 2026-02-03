@@ -25,7 +25,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-/* 🔥 FIREBASE CONFIG */
+// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDUilKPoiMJ0mnj-_9yYScDzCCobW0DLSc",
   authDomain: "code-generator-bot-by.firebaseapp.com",
@@ -38,28 +38,31 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* 🔐 BLOCK DIRECT ACCESS */
-const ref = document.referrer;
+// ⏱ 24h in milliseconds
+const TIME_LIMIT = 24*60*60*1000;
 
-
-
-/* 🚀 CODE GENERATOR */
 function generateCode() {
   const msg = document.getElementById("msg");
+  const saved = localStorage.getItem("giveawayCode");
+  const lastTime = localStorage.getItem("giveawayTime");
+  const now = new Date().getTime();
 
-  // browser lock
-  if (localStorage.getItem("giveawayCode")) {
-    msg.innerText = "✅ Your Code: " + localStorage.getItem("giveawayCode");
+  // Check if code exists and less than 24h old
+  if(saved && lastTime && (now - lastTime < TIME_LIMIT)) {
+    msg.innerText = "✅ Your Code: " + saved;
     return;
   }
 
+  // Generate new code
   const code = "TG" + Math.random().toString(36).substr(2,6).toUpperCase();
   localStorage.setItem("giveawayCode", code);
+  localStorage.setItem("giveawayTime", now);
 
+  // Save to Firebase
   db.collection("entries").add({
     code: code,
     time: new Date().toISOString(),
-    referrer: document.referrer,
+    timestamp: now,
     userAgent: navigator.userAgent
   });
 
