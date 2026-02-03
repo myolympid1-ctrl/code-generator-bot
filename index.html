@@ -41,13 +41,7 @@ const db = firebase.firestore();
 /* 🔐 BLOCK DIRECT ACCESS */
 const ref = document.referrer;
 
-if (
-  !ref.includes("linkvertise") &&
-  !ref.includes("clickspay")
-) {
-  document.body.innerHTML =
-    "<h2>❌ Access Denied</h2><p>Please open this page via giveaway link only.</p>";
-}
+
 
 /* 🚀 CODE GENERATOR */
 function generateCode() {
