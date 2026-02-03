@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Invite Only Code</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial,sans-serif; text-align:center; padding:50px; background:#f2f2f2;}
+    .card { max-width:420px; margin:auto; background:#fff; padding:25px; border-radius:10px; }
+    button { padding:12px 20px; margin-top:20px; border:none; border-radius:6px; background:#4caf50; color:#fff; font-size:16px;}
+    #msg { margin-top:20px; font-size:18px;}
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Invite Only Giveaway</h2>
+  <p>Click below to get your code</p>
+  <button onclick="generateCode()">Get Code</button>
+  <div id="msg"></div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+/* 🔥 FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyDUilKPoiMJ0mnj-_9yYScDzCCobW0DLSc",
+  authDomain: "code-generator-bot-by.firebaseapp.com",
+  projectId: "code-generator-bot-by",
+  storageBucket: "code-generator-bot-by.firebasestorage.app",
+  messagingSenderId: "902481674928",
+  appId: "1:902481674928:web:cdcb508b70aee4c9d4f175"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* 🔐 BLOCK DIRECT ACCESS */
+const ref = document.referrer;
+
+if (
+  !ref.includes("linkvertise") &&
+  !ref.includes("clickspay")
+) {
+  document.body.innerHTML =
+    "<h2>❌ Access Denied</h2><p>Please open this page via giveaway link only.</p>";
+}
+
+/* 🚀 CODE GENERATOR */
+function generateCode() {
+  const msg = document.getElementById("msg");
+
+  // browser lock
+  if (localStorage.getItem("giveawayCode")) {
+    msg.innerText = "✅ Your Code: " + localStorage.getItem("giveawayCode");
+    return;
+  }
+
+  const code = "TG" + Math.random().toString(36).substr(2,6).toUpperCase();
+  localStorage.setItem("giveawayCode", code);
+
+  db.collection("entries").add({
+    code: code,
+    time: new Date().toISOString(),
+    referrer: document.referrer,
+    userAgent: navigator.userAgent
+  });
+
+  msg.innerText = "✅ Your Code: " + code;
+}
+</script>
+
+</body>
+</html>
